@@ -75,6 +75,7 @@ def cond_joint_entropy(joint_distribution):
         for x in range(len_x):
             for z in range(len_z):
                 prob_z = np.sum(joint_distribution[:,:,z])
+                print(prob_z)
                 if (joint_distribution[y,x,z] != 0) and (prob_z != 0):
                     entropy += joint_distribution[y,x,z] * math.log(joint_distribution[y,x,z]/prob_z, 2)
     return -entropy
@@ -241,12 +242,12 @@ if __name__ == "__main__":
     # print("Mutual information between Y and Z : {:.3f}".format(mutual_information(joint_yz)))
     # print("Mutual information between W and Z : {:.3f}\n".format(mutual_information(joint_wz)))
 
-    # # Q11 : Compute the conditional joint entropy
-    # """
-    # !!! joint_xyz not correct I think because when computing p_z in the function by making the sum I get [0.6875 0.3125]
-    # while it should be [0.75 0.25] !!!
-    # """
-    # print("Conditional joint entropy of X and Y knowing Z : {:.3f}\n".format(cond_joint_entropy(joint_xyz)))
+    # Q11 : Compute the conditional joint entropy
+    """
+    !!! joint_xyz not correct I think because when computing p_z in the function by making the sum I get [0.6875 0.3125]
+    while it should be [0.75 0.25] !!!
+    """
+    print("Conditional joint entropy of X and Y knowing Z : {:.3f}\n".format(cond_joint_entropy(joint_xyz)))
 
     # # Q11 : Compute the conditional mutual information
     # """
