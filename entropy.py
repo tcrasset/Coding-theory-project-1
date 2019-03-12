@@ -217,40 +217,48 @@ if __name__ == "__main__":
     # print("Joint probability distribution between X, Y and Z :")
     # print(joint_xyz)
 
-    # # Compute the entropy of the random variables
+    # # Q7 : Compute the entropy of the random variables
     # print("Entropy of X : {:.3f}".format(entropy(p_x)))
     # print("Entropy of Y : {:.3f}".format(entropy(p_y)))
     # print("Entropy of Z : {:.3f}".format(entropy(p_w)))
     # print("Entropy of W : {:.3f}\n".format(entropy(p_z)))
 
-    # # Compute the joint entropy
+    # # Q8 : Compute the joint entropy
     # print("Joint entropy of X and Y : {:.3f}".format(joint_entropy(joint_xy)))
     # print("Joint entropy of X and W : {:.3f}".format(joint_entropy(joint_xw)))
     # print("Joint entropy of Y and W : {:.3f}".format(joint_entropy(joint_yw)))
     # print("Joint entropy of W and Z : {:.3f}\n".format(joint_entropy(joint_wz)))
 
-    # # Compute the conditional entropy
+    # # Q9 : Compute the conditional entropy
     # print("Conditional entropy of X knowing Y : {:.3f}".format(conditional_entropy(joint_xy)))
     # print("Conditional entropy of W knowing X : {:.3f}".format(conditional_entropy(joint_xw)))
     # print("Conditional entropy of Z knowing W : {:.3f}".format(conditional_entropy(np.transpose(joint_wz))))
     # print("Conditional entropy of W knowing Z : {:.3f}\n".format(conditional_entropy(joint_wz)))
 
-    # # Compute the mutual information
+    # # Q10 : Compute the mutual information
     # print("Mutual information between X and Y : {:.3f}".format(mutual_information(joint_xy)))
     # print("Mutual information between X and W : {:.3f}".format(mutual_information(joint_xw)))
     # print("Mutual information between Y and Z : {:.3f}".format(mutual_information(joint_yz)))
     # print("Mutual information between W and Z : {:.3f}\n".format(mutual_information(joint_wz)))
 
-    # Compute the conditional joint entropy
-    """
-    !!! joint_xyz not correct I think because when computing p_z in the function by making the sum I get [0.6875 0.3125]
-    while it should be [0.75 0.25] !!!
-    """
-    print("Conditional joint entropy of X and Y knowing Z : {:.3f}\n".format(cond_joint_entropy(joint_xyz)))
+    # # Q11 : Compute the conditional joint entropy
+    # """
+    # !!! joint_xyz not correct I think because when computing p_z in the function by making the sum I get [0.6875 0.3125]
+    # while it should be [0.75 0.25] !!!
+    # """
+    # print("Conditional joint entropy of X and Y knowing Z : {:.3f}\n".format(cond_joint_entropy(joint_xyz)))
 
-    # Compute the conditional mutual information
-    """
-    !!! Same for here, function seems ok but joint_xyz may not be correct !!!
-    """
-    print("Conditional mutual information of X and Y knowing Z : {:.3f}\n".format(cond_mutual_information(joint_xyz)))
+    # # Q11 : Compute the conditional mutual information
+    # """
+    # !!! Same for here, function seems ok but joint_xyz may not be correct !!!
+    # """
+    # print("Conditional mutual information of X and Y knowing Z : {:.3f}\n".format(cond_mutual_information(joint_xyz)))
+
+    # # Q13 : Entropy of a single square
+    # prob = np.full(9, 1/9)
+    # print("Entropy of a single square : {:.3f}".format(entropy(prob)))
+
+    # Q14 : Entropy of the subgrid
+
+
     
