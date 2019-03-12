@@ -194,8 +194,8 @@ if __name__ == "__main__":
     p_x, p_y = compute_probas_from_joint(joint_xy)
     p_w, joint_xw, joint_yw, joint_xyw = compute_probas_from_table(table_w,joint_xy)
     p_z, joint_xz, joint_yz, joint_xyz = compute_probas_from_table(table_z,joint_xy)
-    joint_wz = np.ones((2,2), int)
-    np.fill_diagonal(joint_wz, 0)
+    joint_wz = np.asarray([[0, 0.25],
+                            [0.75, 0]])
     # print("Probability distribution of X :")
     # print(p_x)
     # print("Probability distribution of Y :")
