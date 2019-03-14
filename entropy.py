@@ -63,20 +63,26 @@ def mutual_information(joint_distribution, distribution_var1, distribution_var2)
     return entropy
 
 
-def cond_joint_entropy(cond_distribution, distribution_cond):
+def cond_joint_entropy(joint_distribution, distribution_cond):
     """
     Computes H(X,Y|Z), the conditional joint entropy of the discrete
     random variables X and Y knowing Z, given their joint probability
     distribution and the probability distribution of the condition.
     """
-    len_z = cond_distribution.shape[2]
+    len_y = joint_distribution.shape[0]
+    len_x = joint_distribution.shape[1]
+    len_z = joint_distribution.shape[2]
     entropy = 0
-    for z in range(len_z):
-        entropy += distribution_cond[z] * joint_entropy(cond_distribution[:,:,z])
+    for y in range(len_y):
+        for x in range(len_x):
+            for z in range(len_z):
+                if (joint_distribution[y,x,z] != 0 and
+                distribution_cond[z] != 0):
+                    entropy += joint_distribution[y,x,z] * math.log(joint_distribution[y,x,z]/distribution_cond[z], 2)
     return -entropy
 
 
-def cond_mutual_information(cond_distribution, cond_var1, cond_var2, distribution_cond):
+def cond_mutual_information(joint_distribution, distribution_cond, joint_var1, joint_var2):
     """
     Computes I(X;Y|Z), the conditional mutual information between the
     discrete random variables X and Y knowing Z, given their conditional
@@ -84,10 +90,18 @@ def cond_mutual_information(cond_distribution, cond_var1, cond_var2, distributio
     distributions P(X|Z) and P(Y|Z), and the probability distribution of
     the condition P(Z).
     """
-    len_z = cond_distribution.shape[2]
+    len_y = joint_distribution.shape[0]
+    len_x = joint_distribution.shape[1]
+    len_z = joint_distribution.shape[2]
     entropy = 0
-    for z in range(len_z):
-        entropy += distribution_cond[z] * mutual_information(cond_distribution[:,:,z], cond_var1[:,z], cond_var2[:,z])
+    for y in range(len_y):
+        for x in range(len_x):
+            for z in range(len_z):
+                if (joint_distribution[y,x,z] != 0 and
+                distribution_cond[z] != 0 and
+                joint_var1[z,x] != 0 and
+                joint_var1[z,y] != 0):
+                    entropy += joint_distribution[y,x,z] * math.log((joint_distribution[y,x,z]*distribution_cond[z])/(joint_var1[z,x] * joint_var2[z,y]), 2)
     return entropy
 
 
@@ -155,7 +169,7 @@ def compute_probas_from_table(table, joint_xy):
         joint_yz[0,y] = (count/len_x)*probas_Y[y]
         joint_yz[1,y] = (1-(count/len_x))*probas_Y[y]
 
-    # Compute conditional P(X,Y|Z)
+    # Compute joint P(X,Y,Z)
     for y in range(len_y):
         for x in range(len_x):
             if table[y,x] == 0:
@@ -164,6 +178,21 @@ def compute_probas_from_table(table, joint_xy):
                 joint_xyz[y,x,1] = joint_xy[y,x]
 
     return (probas_Z, joint_xz, joint_yz, joint_xyz)
+
+def compute_joint_wzx(joint_wz, p_x):
+    """
+    Compute the joint probability distribution P(W,Z,X) from P(W,Z) and P(X)
+    knowing that P(W,Z|X) = P(W,Z)
+    """
+    len_z = joint_wz.shape[0]
+    len_w = joint_wz.shape[1]
+    len_x = len(p_x)
+    joint_wzx = np.zeros((len_z, len_w, len_x))
+    for z in range(len_z):
+        for w in range(len_w):
+            for x in range(len_x):
+                joint_wzx[z,w,x] = joint_wz[z,w]*p_x[x]
+    return joint_wzx
 
 
 
@@ -186,6 +215,7 @@ if __name__ == "__main__":
     p_z, joint_xz, joint_yz, joint_xyz = compute_probas_from_table(table_z,joint_xy)
     joint_wz = np.asarray([[0, 0.25],
                             [0.75, 0]])
+    joint_wzx = compute_joint_wzx(joint_wz, p_x)
     # print("Probability distribution of X :")
     # print(p_x)
     # print("Probability distribution of Y :")
@@ -204,8 +234,10 @@ if __name__ == "__main__":
     # print(joint_xz)
     # print("Joint probability distribution between Y and Z :")
     # print(joint_yz)
-    # # print("Joint probability distribution between X, Y and Z :")
-    # # print(joint_xyz)
+    # print("Joint probability distribution between X, Y and Z :")
+    # print(joint_xyz)
+    # print("Joint probability distribution between W, Z and X :")
+    # print(joint_wzx)
 
     # # Q7 : Compute the entropy of the random variables
     # print("Entropy of X : {:.3f}".format(entropy(p_x)))
@@ -227,18 +259,18 @@ if __name__ == "__main__":
 
     # # Q10 : Compute the mutual information
     # print("Mutual information between X and Y : {:.3f}".format(mutual_information(joint_xy, p_x, p_y)))
-    # print("Mutual information between X and W : {:.3f}".format(mutual_information(joint_xw, p_x, p_w)))
+    # print("Mutual information between X and W : {:.3f}".format(mutual_information(joint_xw, p_x, p_w)))Ò
     # print("Mutual information between Y and Z : {:.3f}".format(mutual_information(joint_yz, p_y, p_z)))
     # print("Mutual information between W and Z : {:.3f}\n".format(mutual_information(joint_wz, p_w, p_z)))
 
     # # Q11 : Compute the conditional joint entropy
     # """
-    # print("Conditional joint entropy of X and Y knowing W : {:.3f}".format(cond_joint_entropy(joint_xyw)))
-    # print("Conditional joint entropy of W and Z knowing X : {:.3f}\n".format(cond_joint_entropy(joint_xyw)))
+    # print("Conditional joint entropy of X and Y knowing W : {:.3f}".format(cond_joint_entropy(joint_xyw, p_w)))
+    # print("Conditional joint entropy of W and Z knowing X : {:.3f}\n".format(cond_joint_entropy(joint_wzx, p_x)))
 
     # # Q11 : Compute the conditional mutual information
-    # print("Conditional mutual information of X and Y knowing Z : {:.3f}".format(cond_mutual_information(joint_xyz)))
-    # print("Conditional mutual information of W and Z knowing X : {:.3f}\n".format(cond_mutual_information(joint_xyw)))
+    # print("Conditional mutual information of X and Y knowing W : {:.3f}".format(cond_mutual_information(joint_xyw, p_w, joint_xw, joint_yw)))
+    # print("Conditional mutual information of W and Z knowing X : {:.3f}\n".format(cond_mutual_information(joint_wzx, p_x, np.transpose(joint_xw), np.transpose(joint_xz))))
 
     # # Q13 : Entropy of a single square
     # prob = np.full(9, 1/9)
@@ -252,6 +284,10 @@ if __name__ == "__main__":
     #     result += entropy(prob)
     #     i -= 1
     # print(result)
+
+    # Q15 : Entropy of the unsolved grid
+
+
 
 
 
