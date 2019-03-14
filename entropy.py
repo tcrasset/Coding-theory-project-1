@@ -202,6 +202,49 @@ def compute_joint_wzx(joint_wz, p_x):
 
 
 #-----------------------------------------------------------------------------------------------
+# Functions used for answering Question 15
+#-----------------------------------------------------------------------------------------------
+def union(lst1, lst2, lst3):
+    """
+    Compute the union of lists without repetitionwithout zero.
+    """
+    final_list = list(set(lst1) | set(lst2) |set(lst3))
+    final_list = [x for x in final_list if x!=0]
+    # try:
+    #     final_list.remove(c)
+    # except ValueError:
+    #     pass
+    return final_list
+
+
+def entropy_unsolved_sudoku(sudoku):
+    """
+    Compute the entropy of the given ensolved sudoku.
+    """
+    grid_index_arr = np.zeros((9,9))
+    n = []
+    #Create grid index for every cell
+    for r in range(sudoku.shape[0]):
+        for c in range(sudoku.shape[1]):
+            grid_index_arr[r,c] = int(c / 3 + r - r % 3)
+
+    entropy = 0
+    for r in range(sudoku.shape[0]):
+        for c in range(sudoku.shape[1]):
+            if(sudoku[r,c] ==0): #Empty cells only
+                row = sudoku[r,:]
+                col = sudoku[:,c]
+                grid_index = c / 3 + r - r % 3
+                subgrid = sudoku[np.where(grid_index_arr == grid_index)]
+                #Digits that could be filled in column, row and subgrid
+                n_digits = union(row,col,subgrid)
+                n.append(9 - len(n_digits))
+
+    entropy = sum([math.log(x,2) for x in n])
+    return entropy
+
+
+#-----------------------------------------------------------------------------------------------
 # To print question number on the terminal
 #-----------------------------------------------------------------------------------------------
 def print_in_a_frame(message, symbol):
@@ -213,7 +256,7 @@ def print_in_a_frame(message, symbol):
 
 
 #-----------------------------------------------------------------------------------------------
-# QUESTIONS 12 to 14
+# QUESTIONS 12 to 15
 #-----------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     # Joint distribution[y, x]
@@ -285,11 +328,18 @@ if __name__ == "__main__":
 
     # Q14 : Entropy of the subgrid
     print_in_a_frame("Question 14", '=')
-    result = 0
+    entropy_subgrid = 0
     i = 6
     while i >= 1:
         prob = np.full(i, 1/i)
-        result += entropy(prob)
+        entropy_subgrid += entropy(prob)
         i -= 1
-    print("Entropy of the given subgrid : {:.3f}\n".format(result))
+    print("Entropy of the given subgrid : {:.3f}".format(entropy_subgrid))
+
+    # Q15 : Entropy of unsolved sudoku grid
+    print_in_a_frame("Question 15", '=')
+    sudoku = np.load('sudoku.npy')
+    print("Sudoku \n", sudoku)
+    entropy_sudoku = entropy_unsolved_sudoku(sudoku)
+    print("Entropy of the given unsolved sudoku : {:.3f}\n".format(entropy_sudoku))
     
