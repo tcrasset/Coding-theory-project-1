@@ -210,10 +210,6 @@ def union(lst1, lst2, lst3):
     """
     final_list = list(set(lst1) | set(lst2) |set(lst3))
     final_list = [x for x in final_list if x!=0]
-    # try:
-    #     final_list.remove(c)
-    # except ValueError:
-    #     pass
     return final_list
 
 
