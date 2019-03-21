@@ -205,8 +205,6 @@ def compute_joint_wzx(joint_wz, p_x):
         for w in range(len_w):
             for x in range(len_x):
                 joint_wzx[z,w,x] = joint_wz[z,w]*p_x[x]
-    print("joint_wzx",joint_wzx[0,:,:])
-    print("joint_wzx",joint_wzx[1,:,:])
     return joint_wzx
     
 
