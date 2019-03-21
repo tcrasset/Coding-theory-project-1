@@ -149,31 +149,38 @@ def compute_probas_from_table(table, joint_xy):
     probas_X, probas_Y = compute_probas_from_joint(joint_xy)
     
     # Compute P(Z)
-    count = 0
+    sum_pxy = 0
     for y in range(len_y):
         for x in range(len_x):
-            if table[y,x] == 0:
-                count += 1
-    probas_Z[0] = count/(len_x*len_y)
+            if table[y,x] == 1:
+                sum_pxy += joint_xy[y,x]
+    probas_Z[0] = sum_pxy
     probas_Z[1] = 1 - probas_Z[0]
 
     # Compute joint between X and Z
     for x in range(len_x):
-        count = 0
+        sum_y0 = 0
+        sum_y1 = 0
         for y in range(len_y):
-            if table[y,x] == 0:
-                count += 1
-        joint_xz[0,x] = (count/len_y)*probas_X[x]
-        joint_xz[1,x] = (1-(count/len_y))*probas_X[x]
+            if table[y,x] == 1: # Z = 1
+                sum_y1 += joint_xy[y][x]
+            if table[y,x] == 0: # Z = 0
+                sum_y0 += joint_xy[y][x]  
+        joint_xz[0,x] = sum_y0
+        joint_xz[1,x] = sum_y1
 
     # Compute joint between Y and Z
     for y in range(len_y):
-        count = 0
+        sum_x0 = 0
+        sum_x1 = 0
         for x in range(len_x):
-            if table[y,x] == 0:
-                count += 1
-        joint_yz[0,y] = (count/len_x)*probas_Y[y]
-        joint_yz[1,y] = (1-(count/len_x))*probas_Y[y]
+            if table[y,x] == 1: # Z = 1
+                sum_x1 += joint_xy[y][x]
+            if table[y,x] == 0: # Z = 0
+                sum_x0 += joint_xy[y][x]  
+        joint_yz[0,y] = sum_x0
+        joint_yz[1,y] = sum_x1
+
 
     # Compute joint P(X,Y,Z)
     for y in range(len_y):
@@ -198,8 +205,10 @@ def compute_joint_wzx(joint_wz, p_x):
         for w in range(len_w):
             for x in range(len_x):
                 joint_wzx[z,w,x] = joint_wz[z,w]*p_x[x]
+    print("joint_wzx",joint_wzx[0,:,:])
+    print("joint_wzx",joint_wzx[1,:,:])
     return joint_wzx
-
+    
 
 #-----------------------------------------------------------------------------------------------
 # Functions used for answering Question 15
@@ -271,8 +280,8 @@ if __name__ == "__main__":
     p_x, p_y = compute_probas_from_joint(joint_xy)
     p_w, joint_xw, joint_yw, joint_xyw = compute_probas_from_table(table_w,joint_xy)
     p_z, joint_xz, joint_yz, joint_xyz = compute_probas_from_table(table_z,joint_xy)
-    joint_wz = np.asarray([[0, 0.25],
-                            [0.75, 0]])
+    joint_wz = np.asarray([[0, 5/16],
+                            [11/16, 0]])
     joint_wzx = compute_joint_wzx(joint_wz, p_x)
     # print_in_a_frame("Probability distributions", '=')
     # print("Probability distribution of X :\n", p_x)
@@ -303,8 +312,8 @@ if __name__ == "__main__":
     # Conditional entropy
     print("Conditional entropy of X knowing Y : {:.3f}".format(conditional_entropy(joint_xy, p_y)))
     print("Conditional entropy of W knowing X : {:.3f}".format(conditional_entropy(np.transpose(joint_xw), p_x)))
-    print("Conditional entropy of Z knowing W : {:.3f}".format(conditional_entropy(np.transpose(joint_wz), p_w)))
-    print("Conditional entropy of W knowing Z : {:.3f}\n".format(conditional_entropy(joint_wz, p_z)))
+    print("Conditional entropy of Z knowing W : {:.3f}".format(conditional_entropy(joint_wz, p_w)))
+    print("Conditional entropy of W knowing Z : {:.3f}\n".format(conditional_entropy(np.transpose(joint_wz), p_z)))
     # Mutual information
     print("Mutual information between X and Y : {:.3f}".format(mutual_information(joint_xy, p_x, p_y)))
     print("Mutual information between X and W : {:.3f}".format(mutual_information(joint_xw, p_x, p_w)))
